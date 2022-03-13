@@ -1,11 +1,16 @@
 import * as esbuild from "esbuild-wasm";
 import axios from "axios";
+import localForage from "localforage";
+
+const fileCache = localForage.createInstance({
+  name: "filecache",
+});
+
 export const unpkgPathPlugin = () => {
   return {
     name: "unpkg-path-plugin",
     setup(build: esbuild.PluginBuild) {
       build.onResolve({ filter: /.*/ }, async (args: any) => {
-        console.log("onResolve", args);
         if (args.path === "index.js") {
           return { path: args.path, namespace: "a" };
         }
@@ -13,10 +18,8 @@ export const unpkgPathPlugin = () => {
         if (args.path.includes("./")) {
           return {
             namespace: "a",
-            path: new URL(
-              args.path,
-              `https://unpkg.com${args.resolveDir}` + "/"
-            ).href,
+            path: new URL(args.path, `https://unpkg.com${args.resolveDir}/`)
+              .href,
           };
         }
 
@@ -27,27 +30,37 @@ export const unpkgPathPlugin = () => {
       });
 
       build.onLoad({ filter: /.*/ }, async (args: any) => {
-        console.log("onLoad", args);
-
         if (args.path === "index.js") {
           return {
             loader: "jsx",
             contents: `
-              const message = require("nested-test-pkg");
-              console.log(message);
+              import { useState } from "react";
+              console.log(React);
             `,
           };
         }
 
+        const cacheKey = args.path;
+        const cachedResult = await fileCache.getItem<esbuild.OnLoadResult>(
+          cacheKey
+        );
+
+        if (cachedResult) {
+          console.log("Using cached");
+          return cachedResult;
+        } else {
+          console.log("Not Using cached");
+        }
+
         const { data, request } = await axios.get(args.path);
-
-        console.log(request, new URL("./", request.responseURL).pathname);
-
-        return {
+        const result: esbuild.OnLoadResult = {
           loader: "jsx",
           contents: data,
           resolveDir: new URL("./", request.responseURL).pathname,
         };
+
+        await fileCache.setItem(cacheKey, result);
+        return result;
       });
     },
   };
