@@ -21,7 +21,7 @@ export const unpkgPathPlugin = () => {
         }
       );
 
-      //Handle root file of modulesS
+      //Handle root file of modules
       build.onResolve({ filter: /.*/ }, async (args: any) => {
         return {
           namespace: "a",
