@@ -7,7 +7,7 @@ import { fetchPlugin } from "./plugins/fetch-plugin";
 const App = () => {
   const [input, setInput] = useState("");
   const [code, setCode] = useState("");
-  const ref = useRef<any>();
+  const ref = useRef<esbuild.Service>();
 
   const startService = async () => {
     ref.current = await esbuild.startService({
@@ -26,21 +26,21 @@ const App = () => {
     }
 
     setCode("processing...");
-
-    const result = await ref.current.build({
-      entryPoints: ["index.js"],
-      bundle: true,
-      write: false,
-      plugins: [unpkgPathPlugin(), fetchPlugin(input)],
-      define: {
-        "process.env.NODE_ENV": '"production"',
-        global: "window",
-      },
-    });
-
-    console.log(result);
-
-    setCode(result.outputFiles[0].text);
+    try {
+      const result = await ref.current.build({
+        entryPoints: ["index.js"],
+        bundle: true,
+        write: false,
+        plugins: [unpkgPathPlugin(), fetchPlugin(input)],
+        define: {
+          "process.env.NODE_ENV": '"production"',
+          global: "window",
+        },
+      });
+      setCode(result.outputFiles[0].text);
+    } catch (e: any) {
+      setCode("error...\n" + e.message);
+    }
   };
 
   return (
