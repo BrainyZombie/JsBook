@@ -6,23 +6,29 @@ const fileCache = localForage.createInstance({
   name: "filecache",
 });
 
-export const unpkgPathPlugin = () => {
+export const unpkgPathPlugin = (inputCode: string) => {
   return {
     name: "unpkg-path-plugin",
     setup(build: esbuild.PluginBuild) {
-      build.onResolve({ filter: /.*/ }, async (args: any) => {
-        if (args.path === "index.js") {
-          return { path: args.path, namespace: "a" };
-        }
+      //Handle root entry file of index.js
+      build.onResolve({ filter: /(^index\.js$)/ }, async () => {
+        return { path: "index.js", namespace: "a" };
+      });
 
-        if (args.path.includes("./")) {
+      //Handle relative paths in module
+      build.onResolve(
+        { filter: /^\.+\// },
+        async (args: esbuild.OnResolveArgs) => {
           return {
             namespace: "a",
             path: new URL(args.path, `https://unpkg.com${args.resolveDir}/`)
               .href,
           };
         }
+      );
 
+      //Handle root file of modulesS
+      build.onResolve({ filter: /.*/ }, async (args: any) => {
         return {
           namespace: "a",
           path: `https://unpkg.com/${args.path}`,
@@ -33,10 +39,7 @@ export const unpkgPathPlugin = () => {
         if (args.path === "index.js") {
           return {
             loader: "jsx",
-            contents: `
-              import { useState } from "react";
-              console.log(React);
-            `,
+            contents: inputCode,
           };
         }
 
