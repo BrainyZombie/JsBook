@@ -1,15 +1,17 @@
+import "bulmaswatch/superhero/bulmaswatch.min.css";
 import ReactDOM from "react-dom";
 import { useState, useEffect, useRef } from "react";
 import * as esbuild from "esbuild-wasm";
 import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
 import { fetchPlugin } from "./plugins/fetch-plugin";
 import CodeEditor from "./components/code-editor";
-import "bulmaswatch/superhero/bulmaswatch.min.css";
+import Preview from "./components/preview";
 
 const App = () => {
   const [input, setInput] = useState("");
+  const [code, setCode] = useState("");
   const ref = useRef<esbuild.Service>();
-  const iframe = useRef<any>();
+
   const startService = async () => {
     ref.current = await esbuild.startService({
       worker: true,
@@ -26,7 +28,6 @@ const App = () => {
       return;
     }
 
-    iframe.current.srcdoc = html;
     const result = await ref.current.build({
       entryPoints: ["index.js"],
       bundle: true,
@@ -37,33 +38,9 @@ const App = () => {
         global: "window",
       },
     });
-    console.log(result.outputFiles[0].text);
-    iframe.current.contentWindow.postMessage(result.outputFiles[0].text, "*");
-  };
 
-  const html = `
-    <html>
-      <head></head>
-      <body>
-        <div id="root">
-        </div>
-        <script>
-          window.addEventListener('message', (event) => {
-            try {
-              eval(event.data);
-            } catch (err) {
-              const root = document.getElementById('root');
-              root.innerHTML = \`
-                <div style='color:red;'>
-                  <h4>Runtime Error</h4>
-                  \${err}
-                </div>\`;
-            }
-          }, false);
-        </script>
-      </body>
-    </html>
-  `;
+    setCode(result.outputFiles[0].text);
+  };
 
   return (
     <div>
@@ -71,20 +48,11 @@ const App = () => {
         initialValue="const a=1;"
         onChange={(value) => setInput(value)}
       />
-      <textarea
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      ></textarea>
 
       <div>
         <button onClick={onClick}>Submit</button>
       </div>
-      <iframe
-        title="preview"
-        ref={iframe}
-        sandbox="allow-scripts"
-        srcDoc={html}
-      ></iframe>
+      <Preview code={code} />
     </div>
   );
 };
