@@ -6,7 +6,6 @@ import { fetchPlugin } from "./plugins/fetch-plugin";
 
 const App = () => {
   const [input, setInput] = useState("");
-  const [code, setCode] = useState("");
   const ref = useRef<esbuild.Service>();
   const iframe = useRef<any>();
   const startService = async () => {
@@ -25,7 +24,7 @@ const App = () => {
       return;
     }
 
-    setCode("processing...");
+    iframe.current.srcdoc = html;
     const result = await ref.current.build({
       entryPoints: ["index.js"],
       bundle: true,
@@ -36,7 +35,6 @@ const App = () => {
         global: "window",
       },
     });
-    //setCode(result.outputFiles[0].text);
     console.log(result.outputFiles[0].text);
     iframe.current.contentWindow.postMessage(result.outputFiles[0].text, "*");
   };
@@ -74,7 +72,12 @@ const App = () => {
       <div>
         <button onClick={onClick}>Submit</button>
       </div>
-      <iframe ref={iframe} sandbox="allow-scripts" srcDoc={html}></iframe>
+      <iframe
+        title="preview"
+        ref={iframe}
+        sandbox="allow-scripts"
+        srcDoc={html}
+      ></iframe>
     </div>
   );
 };
