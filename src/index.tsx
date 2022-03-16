@@ -26,23 +26,19 @@ const App = () => {
     }
 
     setCode("processing...");
-    try {
-      const result = await ref.current.build({
-        entryPoints: ["index.js"],
-        bundle: true,
-        write: false,
-        plugins: [unpkgPathPlugin(), fetchPlugin(input)],
-        define: {
-          "process.env.NODE_ENV": '"production"',
-          global: "window",
-        },
-      });
-      //setCode(result.outputFiles[0].text);
-      console.log(result.outputFiles[0].text);
-      iframe.current.contentWindow.postMessage(result.outputFiles[0].text, "*");
-    } catch (e: any) {
-      setCode("error...\n" + e.message);
-    }
+    const result = await ref.current.build({
+      entryPoints: ["index.js"],
+      bundle: true,
+      write: false,
+      plugins: [unpkgPathPlugin(), fetchPlugin(input)],
+      define: {
+        "process.env.NODE_ENV": '"production"',
+        global: "window",
+      },
+    });
+    //setCode(result.outputFiles[0].text);
+    console.log(result.outputFiles[0].text);
+    iframe.current.contentWindow.postMessage(result.outputFiles[0].text, "*");
   };
 
   const html = `
@@ -53,7 +49,16 @@ const App = () => {
         </div>
         <script>
           window.addEventListener('message', (event) => {
-            eval(event.data);
+            try {
+              eval(event.data);
+            } catch (err) {
+              const root = document.getElementById('root');
+              root.innerHTML = \`
+                <div style='color:red;'>
+                  <h4>Runtime Error</h4>
+                  \${err}
+                </div>\`;
+            }
           }, false);
         </script>
       </body>
