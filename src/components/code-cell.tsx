@@ -11,12 +11,21 @@ const CodeCell = () => {
   const [code, setCode] = useState("");
   const [input, setInput] = useState("const a = 1;");
 
-  let timer: any;
+  let runTimer: any;
+  let fmtTimer: any;
   const onChange = async (value: string) => {
-    if (timer) {
-      clearTimeout(timer);
+    if (runTimer) {
+      clearTimeout(runTimer);
     }
-    timer = setTimeout(async () => {
+    runTimer = setTimeout(async () => {
+      const output = await bundle(value);
+      setCode(output);
+    }, 750);
+
+    if (fmtTimer) {
+      clearTimeout(fmtTimer);
+    }
+    fmtTimer = setTimeout(async () => {
       const unformatted: string = value;
       const formatted = prettier
         .format(unformatted, {
@@ -29,9 +38,7 @@ const CodeCell = () => {
         .replace(/\n$/, "");
 
       setInput(formatted);
-      const output = await bundle(value);
-      setCode(output);
-    }, 750);
+    }, 2000);
   };
 
   return (

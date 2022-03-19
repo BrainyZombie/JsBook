@@ -16,7 +16,7 @@ const html = `
       const handleErrors = (err) => {
         console.log(err);
         const root = document.getElementById('root');
-        root.innerHTML = \`
+        root.innerHTML += \`
           <div style='color:red;'>
             <h4>Runtime Error</h4>
             \${err}
