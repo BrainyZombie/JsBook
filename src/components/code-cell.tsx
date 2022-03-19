@@ -9,6 +9,7 @@ import parser from "prettier/parser-babel";
 
 const CodeCell = () => {
   const [code, setCode] = useState("");
+  const [err, setErr] = useState("");
   const [input, setInput] = useState("const a = 1;");
 
   let runTimer: any;
@@ -19,7 +20,13 @@ const CodeCell = () => {
     }
     runTimer = setTimeout(async () => {
       const output = await bundle(value);
-      setCode(output);
+      if (output.error) {
+        setCode("");
+        setErr(output.error);
+      } else {
+        setErr("");
+        setCode(output.code);
+      }
     }, 750);
 
     if (fmtTimer) {
@@ -27,17 +34,19 @@ const CodeCell = () => {
     }
     fmtTimer = setTimeout(async () => {
       const unformatted: string = value;
-      const formatted = prettier
-        .format(unformatted, {
-          parser: "babel",
-          plugins: [parser],
-          useTabs: false,
-          semi: true,
-          singleQuote: true,
-        })
-        .replace(/\n$/, "");
+      try {
+        const formatted = prettier
+          .format(unformatted, {
+            parser: "babel",
+            plugins: [parser],
+            useTabs: false,
+            semi: true,
+            singleQuote: true,
+          })
+          .replace(/\n$/, "");
 
-      setInput(formatted);
+        setInput(formatted);
+      } catch (err: any) {}
     }, 2000);
   };
 
@@ -47,7 +56,7 @@ const CodeCell = () => {
         <Resizable direction="horizontal">
           <CodeEditor initialValue={input} onChange={onChange} />
         </Resizable>
-        <Preview code={code} />
+        <Preview code={code} err={err} />
       </div>
     </Resizable>
   );

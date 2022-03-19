@@ -4,6 +4,7 @@ import React from "react";
 
 interface PreviewProps {
   code: string;
+  err: string;
 }
 
 const html = `
@@ -29,7 +30,11 @@ const html = `
       });
       window.addEventListener('message', (event) => {
         try{
-          eval(event.data);
+          if (event.data.err === '') {
+            eval(event.data);
+          } else {
+            handleErrors(event.data.err);
+          }
         } catch(err) {handleErrors(err);}
       }, false);
     </script>
@@ -37,15 +42,15 @@ const html = `
 </html>
 `;
 
-const Preview: React.FC<PreviewProps> = ({ code }) => {
+const Preview: React.FC<PreviewProps> = ({ code, err }) => {
   const iframe = useRef<any>();
 
   useEffect(() => {
     iframe.current.srcdoc = html;
-  }, [code]);
+  }, [code, err]);
 
   const onLoad = () => {
-    iframe.current.contentWindow.postMessage(code, "*");
+    iframe.current.contentWindow.postMessage({ code, err }, "*");
   };
 
   return (
