@@ -2,7 +2,6 @@ import { ActionType } from "../action-types";
 import { Action } from "../actions";
 import { Cell } from "../cells";
 import produce from "immer";
-import { randomUUID } from "crypto";
 interface CellsState {
   loading: boolean;
   error: string | null;
@@ -27,7 +26,7 @@ const reducer = produce((state: CellsState = initialState, action: Action) => {
       break;
     case ActionType.DELETE_CELL:
       delete state.data[action.payload.id];
-      state.order = state.order.filter((id) => id != action.payload.id);
+      state.order = state.order.filter((id) => id !== action.payload.id);
       break;
     case ActionType.MOVE_CELL:
       const { direction } = action.payload;
