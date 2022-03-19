@@ -27,11 +27,11 @@ const CodeCell = () => {
           singleQuote: true,
         })
         .replace(/\n$/, "");
-      setInput(formatted);
 
+      setInput(formatted);
       const output = await bundle(value);
       setCode(output);
-    }, 1500);
+    }, 750);
   };
 
   return (

@@ -13,17 +13,24 @@ const html = `
     <div id="root">
     </div>
     <script>
+      const handleErrors = (err) => {
+        console.log(err);
+        const root = document.getElementById('root');
+        root.innerHTML = \`
+          <div style='color:red;'>
+            <h4>Runtime Error</h4>
+            \${err}
+          </div>\`;
+      }
+      window.addEventListener('error', (event) => {
+        event.preventDefault();
+        handleErrors(event.error);
+        console.log(event);
+      });
       window.addEventListener('message', (event) => {
-        try {
+        try{
           eval(event.data);
-        } catch (err) {
-          const root = document.getElementById('root');
-          root.innerHTML = \`
-            <div style='color:red;'>
-              <h4>Runtime Error</h4>
-              \${err}
-            </div>\`;
-        }
+        } catch(err) {handleErrors(err);}
       }, false);
     </script>
   </body>
@@ -35,7 +42,6 @@ const Preview: React.FC<PreviewProps> = ({ code }) => {
 
   useEffect(() => {
     iframe.current.srcdoc = html;
-    iframe.current.contentWindow.postMessage(code, "*");
   }, [code]);
 
   const onLoad = () => {
