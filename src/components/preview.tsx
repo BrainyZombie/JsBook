@@ -37,6 +37,11 @@ const Preview: React.FC<PreviewProps> = ({ code }) => {
     iframe.current.srcdoc = html;
     iframe.current.contentWindow.postMessage(code, "*");
   }, [code]);
+
+  const onLoad = () => {
+    iframe.current.contentWindow.postMessage(code, "*");
+  };
+
   return (
     <div className="preview-wrapper">
       <iframe
@@ -44,6 +49,7 @@ const Preview: React.FC<PreviewProps> = ({ code }) => {
         ref={iframe}
         sandbox="allow-scripts"
         srcDoc={html}
+        onLoad={onLoad}
       />
     </div>
   );
