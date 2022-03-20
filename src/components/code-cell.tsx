@@ -6,11 +6,16 @@ import React from "react";
 import Resizable from "./resizable";
 import prettier from "prettier";
 import parser from "prettier/parser-babel";
+import { Cell } from "../state";
+import { useActions } from "../hooks/use-actions";
+interface CodeCellProps {
+  cell: Cell;
+}
 
-const CodeCell = () => {
+const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const [code, setCode] = useState("");
   const [err, setErr] = useState("");
-  const [input, setInput] = useState("const a = 1;");
+  const { updateCell } = useActions();
 
   let runTimer: any;
   let fmtTimer: any;
@@ -19,7 +24,10 @@ const CodeCell = () => {
       clearTimeout(runTimer);
     }
     runTimer = setTimeout(async () => {
+      console.log("Bundling");
       const output = await bundle(value);
+      console.log(output);
+
       if (output.error) {
         setCode("");
         setErr(output.error);
@@ -45,7 +53,7 @@ const CodeCell = () => {
           })
           .replace(/\n$/, "");
 
-        setInput(formatted);
+        updateCell(cell.id, formatted);
       } catch (err: any) {}
     }, 2000);
   };
@@ -54,7 +62,7 @@ const CodeCell = () => {
     <Resizable direction="vertical">
       <div style={{ height: "100%", display: "flex", flexDirection: "row" }}>
         <Resizable direction="horizontal">
-          <CodeEditor initialValue={input} onChange={onChange} />
+          <CodeEditor initialValue={cell.content} onChange={onChange} />
         </Resizable>
         <Preview code={code} err={err} />
       </div>

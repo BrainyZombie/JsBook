@@ -31,7 +31,7 @@ const html = `
       window.addEventListener('message', (event) => {
         try{
           if (event.data.err === '') {
-            eval(event.data);
+            eval(event.data.code);
           } else {
             handleErrors(event.data.err);
           }
