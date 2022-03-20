@@ -1,5 +1,5 @@
 import "bulmaswatch/superhero/bulmaswatch.min.css";
-import "@fortawesome/fontawesome-free/css/all.min.css";
+import "@fortawesome/fontawesome-free/css/all.css";
 import ReactDOM from "react-dom";
 // import CodeCell from "./components/code-cell";
 // import TextEditor from "./components/text-editor";
