@@ -6,7 +6,11 @@ const Header: React.FC = () => {
       <div className="center">
         JSBook
         <span className="icon center">
-          <a href="https://github.com/BrainyZombie/JsBook" target="_blank">
+          <a
+            href="https://github.com/BrainyZombie/JsBook"
+            target="_blank"
+            rel="noreferrer"
+          >
             <i className="fab fa-github"> </i>
           </a>
         </span>
