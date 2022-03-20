@@ -23,11 +23,11 @@ const reducer = produce((state: CellsState = initialState, action: Action) => {
     case ActionType.UPDATE_CELL:
       const { id, content } = action.payload;
       state.data[id].content = content;
-      break;
+      return state;
     case ActionType.DELETE_CELL:
       delete state.data[action.payload.id];
       state.order = state.order.filter((id) => id !== action.payload.id);
-      break;
+      return state;
     case ActionType.MOVE_CELL:
       const { direction } = action.payload;
       const index = state.order.indexOf(action.payload.id);
@@ -35,11 +35,12 @@ const reducer = produce((state: CellsState = initialState, action: Action) => {
         direction === "up"
           ? Math.max(index - 1, 0)
           : Math.min(index + 1, state.order.length - 1);
-      if (index === targetIndex) return;
+      if (index === targetIndex) return state;
 
       state.order[index] = state.order[targetIndex];
       state.order[targetIndex] = action.payload.id;
-      break;
+
+      return state;
     case ActionType.INSERT_CELL_BEFORE:
       const cell: Cell = {
         content: "",
@@ -56,9 +57,7 @@ const reducer = produce((state: CellsState = initialState, action: Action) => {
       } else {
         state.order.splice(idx, 0, cell.id);
       }
-      break;
-    default:
-      break;
+      return state;
   }
   return state;
 });
