@@ -1,6 +1,5 @@
 import "./cell-list-item.css";
 import React from "react";
-import { JsxAttributeLike } from "typescript";
 import { Cell } from "../state";
 import CodeCell from "./code-cell";
 import TextEditor from "./text-editor";

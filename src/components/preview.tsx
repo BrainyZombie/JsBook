@@ -26,7 +26,6 @@ const html = `
       window.addEventListener('error', (event) => {
         event.preventDefault();
         handleErrors(event.error);
-        console.log(event);
       });
       window.addEventListener('message', (event) => {
         try{

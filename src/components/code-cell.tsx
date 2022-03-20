@@ -24,9 +24,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
       clearTimeout(runTimer);
     }
     runTimer = setTimeout(async () => {
-      console.log("Bundling");
       const output = await bundle(value);
-      console.log(output);
 
       if (output.error) {
         setCode("");

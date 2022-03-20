@@ -1,6 +1,5 @@
 import { ActionType } from "../action-types";
 import {
-  Action,
   MoveDirection,
   UpdateCellAction,
   DeleteCellAction,
