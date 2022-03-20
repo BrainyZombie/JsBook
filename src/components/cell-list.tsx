@@ -2,6 +2,7 @@ import { orderedListCommand } from "@uiw/react-md-editor/lib/cjs/commands";
 import React from "react";
 import { useTypedSelector } from "../hooks/use-typed-selector";
 import CellListItem from "./cell-list-item";
+import AddCell from "./add-cell";
 interface CellListProps {}
 const CellList: React.FC = () => {
   const cells = useTypedSelector(({ cells }) => {
@@ -11,9 +12,18 @@ const CellList: React.FC = () => {
   });
 
   const renderedCells = cells.map((cell) => (
-    <CellListItem key={cell.id} cell={cell} />
+    <>
+      <AddCell nextCellId={cell.id}></AddCell>
+      <CellListItem key={cell.id} cell={cell} />
+    </>
   ));
-  return <div>{renderedCells}</div>;
+  return (
+    <div>
+      {renderedCells}
+      <br />
+      <AddCell nextCellId={null} />
+    </div>
+  );
 };
 
 export default CellList;

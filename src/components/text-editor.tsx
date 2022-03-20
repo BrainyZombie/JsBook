@@ -48,7 +48,7 @@ const TextEditor: React.FC<TextEditorProps> = ({ cell }) => {
       }}
     >
       <div className="card-content">
-        <MDEditor.Markdown source={cell.content} />
+        <MDEditor.Markdown source={cell.content || "Click to edit"} />
       </div>
     </div>
   );
