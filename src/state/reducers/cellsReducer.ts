@@ -4,6 +4,7 @@ import { Cell } from "../cells";
 import produce from "immer";
 interface CellsState {
   loading: boolean;
+  nextId: number;
   error: string | null;
   order: string[];
   data: {
@@ -13,6 +14,7 @@ interface CellsState {
 
 const initialState: CellsState = {
   loading: false,
+  nextId: 0,
   error: null,
   order: [],
   data: {},
@@ -48,6 +50,11 @@ const reducer = produce((state: CellsState = initialState, action: Action) => {
         id: randomID(),
       };
 
+      if (action.payload.newId) {
+        cell.id = action.payload.newId;
+      }
+
+      console.log(cell.id, action.payload.newId);
       state.data[cell.id] = cell;
       const idx = action.payload.id
         ? state.order.indexOf(action.payload.id)

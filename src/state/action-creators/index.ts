@@ -43,7 +43,8 @@ export const moveCell = (
 export const insertCellAfter = (
   id: string | null,
   type: CellTypes,
-  content?: string
+  content?: string,
+  newId?: string
 ): InsertCellAfterAction => {
   return {
     type: ActionType.INSERT_CELL_AFTER,
@@ -51,6 +52,7 @@ export const insertCellAfter = (
       id,
       type,
       content,
+      newId,
     },
   };
 };

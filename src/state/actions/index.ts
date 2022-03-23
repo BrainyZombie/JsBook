@@ -22,6 +22,7 @@ export interface InsertCellAfterAction {
     id: string | null;
     type: CellTypes;
     content?: string | null | undefined;
+    newId?: string;
   };
 }
 
