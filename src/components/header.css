@@ -2,12 +2,13 @@
   position: sticky;
   top: 0;
   display: flex;
-  height: 25px;
-  background-color: #37414b;
+  height: 70px;
   justify-content: center;
   z-index: 20;
 }
 .center {
   display: flex;
+  padding: 0px 20px 0px 20px;
   align-items: center;
+  font-size: x-large;
 }

@@ -1,4 +1,4 @@
-import "bulmaswatch/superhero/bulmaswatch.min.css";
+import "bulmaswatch/solar/bulmaswatch.min.css";
 import "@fortawesome/fontawesome-free/css/all.css";
 import ReactDOM from "react-dom";
 import CellList from "./components/cell-list";

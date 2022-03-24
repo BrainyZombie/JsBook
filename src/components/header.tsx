@@ -2,7 +2,7 @@ import "./header.css";
 import React from "react";
 const Header: React.FC = () => {
   return (
-    <div className="Header">
+    <pre className="Header">
       <a
         href="https://github.com/BrainyZombie/JsBook"
         target="_blank"
@@ -15,7 +15,7 @@ const Header: React.FC = () => {
           </span>
         </div>
       </a>
-    </div>
+    </pre>
   );
 };
 
