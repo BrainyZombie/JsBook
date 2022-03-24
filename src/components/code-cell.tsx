@@ -8,14 +8,18 @@ import prettier from "prettier";
 import parser from "prettier/parser-babel";
 import { Cell } from "../state";
 import { useActions } from "../hooks/use-actions";
+import { useTypedSelector } from "../hooks/use-typed-selector";
 interface CodeCellProps {
   cell: Cell;
 }
 
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
-  const [code, setCode] = useState("");
-  const [err, setErr] = useState("");
-  const { updateCell } = useActions();
+  const { updateCell, createBundle } = useActions();
+  const bundles = useTypedSelector((state) => {
+    if (state.bundles === undefined) return {};
+    return state.bundles[cell.id];
+  });
+  console.log(bundles);
 
   let runTimer: any;
   let fmtTimer: any;
@@ -24,15 +28,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
       clearTimeout(runTimer);
     }
     runTimer = setTimeout(async () => {
-      const output = await bundle(value);
-
-      if (output.error) {
-        setCode("");
-        setErr(output.error);
-      } else {
-        setErr("");
-        setCode(output.code);
-      }
+      createBundle(cell.id, cell.content);
     }, 750);
 
     if (fmtTimer) {
@@ -62,7 +58,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
         <Resizable direction="horizontal">
           <CodeEditor initialValue={cell.content} onChange={onChange} />
         </Resizable>
-        <Preview code={code} err={err} />
+        {/* <Preview code={code} err={err} /> */}
       </div>
     </Resizable>
   );
