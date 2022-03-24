@@ -3,18 +3,18 @@ import React from "react";
 const Header: React.FC = () => {
   return (
     <div className="Header">
-      <div className="center">
-        JSBook
-        <span className="icon center">
-          <a
-            href="https://github.com/BrainyZombie/JsBook"
-            target="_blank"
-            rel="noreferrer"
-          >
+      <a
+        href="https://github.com/BrainyZombie/JsBook"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <div className="center">
+          JSBook
+          <span className="icon center">
             <i className="fab fa-github"> </i>
-          </a>
-        </span>
-      </div>
+          </span>
+        </div>
+      </a>
     </div>
   );
 };
