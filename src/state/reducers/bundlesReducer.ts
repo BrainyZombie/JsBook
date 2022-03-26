@@ -1,7 +1,6 @@
 import produce from "immer";
 import { ActionType } from "../action-types";
-import { Action, BundleCompleteAction, BundleStartAction } from "../actions";
-import { Reducer } from "redux";
+import { Action } from "../actions";
 
 export interface Bundle {
   loading: boolean;
@@ -9,7 +8,7 @@ export interface Bundle {
   err: string;
 }
 interface BundlesState {
-  [id: string]: Bundle;
+  [id: string]: Bundle | undefined;
 }
 
 const initialState: BundlesState = {};

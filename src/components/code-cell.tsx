@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import CodeEditor from "./code-editor";
 import Preview from "./preview";
-import bundle from "../bundler";
 import React from "react";
 import Resizable from "./resizable";
 import prettier from "prettier";
@@ -16,14 +15,14 @@ interface CodeCellProps {
 
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const { updateCell, createBundle } = useActions();
-  const bundle: Bundle = useTypedSelector((state) => {
-    if (state.bundles === undefined || state.bundles[cell.id] === undefined)
-      return {
-        code: "",
-        err: "",
-        loading: false,
-      };
-    return state.bundles[cell.id];
+  const bundle: Bundle | undefined = useTypedSelector((state) => {
+    let bundles = state.bundles;
+    let bundle = bundles
+      ? bundles[cell.id] !== undefined
+        ? bundles[cell.id]
+        : undefined
+      : undefined;
+    return bundle;
   });
 
   useEffect(() => {
@@ -31,6 +30,12 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
       createBundle(cell.id, cell.content);
     }, 1500);
 
+    return () => {
+      clearTimeout(runTimer);
+    };
+  }, [cell]);
+
+  useEffect(() => {
     const fmtTimer = setTimeout(async () => {
       const unformatted: string = cell.content;
       try {
@@ -49,10 +54,9 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     }, 3000);
 
     return () => {
-      clearTimeout(runTimer);
       clearTimeout(fmtTimer);
     };
-  }, [cell]);
+  });
 
   return (
     <Resizable direction="vertical">
@@ -63,7 +67,9 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
             onChange={(value) => updateCell(cell.id, value)}
           />
         </Resizable>
-        <Preview code={bundle.code} err={bundle.err} />
+        {(bundle && <Preview code={bundle.code} err={bundle.err} />) || (
+          <Preview code="" err="" />
+        )}
       </div>
     </Resizable>
   );

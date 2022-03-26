@@ -55,7 +55,6 @@ const reducer = produce((state: CellsState = initialState, action: Action) => {
         cell.id = action.payload.newId;
       }
 
-      console.log(cell.id, action.payload.newId);
       state.data[cell.id] = cell;
       const idx = action.payload.id
         ? state.order.indexOf(action.payload.id)
