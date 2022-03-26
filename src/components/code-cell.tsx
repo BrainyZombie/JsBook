@@ -27,43 +27,60 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return bundle;
   });
 
+  const cumulativeCode = useTypedSelector((state) => {
+    const { data, order } = state.cells;
+    const orderedCells = order.map((id) => data[id]);
+    const cumulativeCode = [];
+    for (let c of orderedCells) {
+      if (c.type === "code") {
+        cumulativeCode.push(c.content);
+      }
+      if (c.id === cell.id) {
+        break;
+      }
+    }
+    return cumulativeCode;
+  });
+
+  console.log(cumulativeCode);
+
   useEffect(() => {
     if (!bundle) {
-      createBundle(cell.id, cell.content);
+      createBundle(cell.id, cumulativeCode.join("\n"));
       return;
     }
     const runTimer = setTimeout(async () => {
-      createBundle(cell.id, cell.content);
+      createBundle(cell.id, cumulativeCode.join("\n"));
     }, 1500);
 
     return () => {
       clearTimeout(runTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cell, createBundle]);
+  }, [cumulativeCode.join("\n"), cell.id, createBundle]);
 
-  useEffect(() => {
-    const fmtTimer = setTimeout(async () => {
-      const unformatted: string = cell.content;
-      try {
-        const formatted = prettier
-          .format(unformatted, {
-            parser: "babel",
-            plugins: [parser],
-            useTabs: false,
-            semi: true,
-            singleQuote: true,
-          })
-          .replace(/\n$/, "");
+  // useEffect(() => {
+  //   const fmtTimer = setTimeout(async () => {
+  //     const unformatted: string = cell.content;
+  //     try {
+  //       const formatted = prettier
+  //         .format(unformatted, {
+  //           parser: "babel",
+  //           plugins: [parser],
+  //           useTabs: false,
+  //           semi: true,
+  //           singleQuote: true,
+  //         })
+  //         .replace(/\n$/, "");
 
-        updateCell(cell.id, formatted);
-      } catch (err: any) {}
-    }, 3000);
+  //       updateCell(cell.id, formatted);
+  //     } catch (err: any) {}
+  //   }, 3000);
 
-    return () => {
-      clearTimeout(fmtTimer);
-    };
-  }, [cell, updateCell]);
+  //   return () => {
+  //     clearTimeout(fmtTimer);
+  //   };
+  // }, [cell, updateCell]);
 
   return (
     <Resizable direction="vertical">
