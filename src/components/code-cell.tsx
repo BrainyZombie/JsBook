@@ -26,6 +26,10 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   });
 
   useEffect(() => {
+    if (!bundle) {
+      createBundle(cell.id, cell.content);
+      return;
+    }
     const runTimer = setTimeout(async () => {
       createBundle(cell.id, cell.content);
     }, 1500);
@@ -33,6 +37,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return () => {
       clearTimeout(runTimer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cell, createBundle]);
 
   useEffect(() => {
@@ -56,7 +61,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return () => {
       clearTimeout(fmtTimer);
     };
-  });
+  }, [cell, updateCell]);
 
   return (
     <Resizable direction="vertical">
