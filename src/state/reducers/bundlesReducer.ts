@@ -3,12 +3,13 @@ import { ActionType } from "../action-types";
 import { Action, BundleCompleteAction, BundleStartAction } from "../actions";
 import { Reducer } from "redux";
 
+export interface Bundle {
+  loading: boolean;
+  code: string;
+  err: string;
+}
 interface BundlesState {
-  [id: string]: {
-    loading: boolean;
-    code: string;
-    err: string;
-  };
+  [id: string]: Bundle;
 }
 
 const initialState: BundlesState = {};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CodeEditor from "./code-editor";
 import Preview from "./preview";
 import bundle from "../bundler";
@@ -9,32 +9,30 @@ import parser from "prettier/parser-babel";
 import { Cell } from "../state";
 import { useActions } from "../hooks/use-actions";
 import { useTypedSelector } from "../hooks/use-typed-selector";
+import { Bundle } from "../state/reducers/bundlesReducer";
 interface CodeCellProps {
   cell: Cell;
 }
 
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const { updateCell, createBundle } = useActions();
-  const bundles = useTypedSelector((state) => {
+  const bundle: Bundle = useTypedSelector((state) => {
+    if (state.bundles === undefined || state.bundles[cell.id] === undefined)
+      return {
+        code: "",
+        err: "",
+        loading: false,
+      };
     return state.bundles[cell.id];
   });
-  console.log(bundles);
 
-  let runTimer: any;
-  let fmtTimer: any;
-  const onChange = async (value: string) => {
-    if (runTimer) {
-      clearTimeout(runTimer);
-    }
-    runTimer = setTimeout(async () => {
+  useEffect(() => {
+    const runTimer = setTimeout(async () => {
       createBundle(cell.id, cell.content);
-    }, 750);
+    }, 1500);
 
-    if (fmtTimer) {
-      clearTimeout(fmtTimer);
-    }
-    fmtTimer = setTimeout(async () => {
-      const unformatted: string = value;
+    const fmtTimer = setTimeout(async () => {
+      const unformatted: string = cell.content;
       try {
         const formatted = prettier
           .format(unformatted, {
@@ -48,16 +46,24 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
 
         updateCell(cell.id, formatted);
       } catch (err: any) {}
-    }, 2000);
-  };
+    }, 3000);
+
+    return () => {
+      clearTimeout(runTimer);
+      clearTimeout(fmtTimer);
+    };
+  }, [cell]);
 
   return (
     <Resizable direction="vertical">
       <div style={{ height: "100%", display: "flex", flexDirection: "row" }}>
         <Resizable direction="horizontal">
-          <CodeEditor initialValue={cell.content} onChange={onChange} />
+          <CodeEditor
+            initialValue={cell.content}
+            onChange={(value) => updateCell(cell.id, value)}
+          />
         </Resizable>
-        {/* <Preview code={code} err={err} /> */}
+        <Preview code={bundle.code} err={bundle.err} />
       </div>
     </Resizable>
   );
