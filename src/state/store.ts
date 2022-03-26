@@ -195,7 +195,7 @@ store.dispatch({
     id: null,
     type: "text",
     content: `## Welcome to my JSBook project
-Please modify the code snippets slightly to execute them!`,
+Code executes and lints automatically in a bit!`,
   },
 });
 
