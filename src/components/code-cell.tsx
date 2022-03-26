@@ -33,7 +33,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return () => {
       clearTimeout(runTimer);
     };
-  }, [cell]);
+  }, [cell, createBundle]);
 
   useEffect(() => {
     const fmtTimer = setTimeout(async () => {
