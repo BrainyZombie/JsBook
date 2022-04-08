@@ -27,36 +27,20 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return bundle;
   });
 
-  const cumulativeCode = useTypedSelector((state) => {
-    const { data, order } = state.cells;
-    const orderedCells = order.map((id) => data[id]);
-    const cumulativeCode = [];
-    for (let c of orderedCells) {
-      if (c.type === "code") {
-        cumulativeCode.push(c.content);
-      }
-      if (c.id === cell.id) {
-        break;
-      }
-    }
-    return cumulativeCode;
-  });
-
   useEffect(() => {
     if (!bundle) {
-      createBundle(cell.id, cumulativeCode.join("\n"));
+      createBundle(cell.id, cell.content);
       return;
     }
     const runTimer = setTimeout(async () => {
-      // console.log(cumulativeCode);
-      createBundle(cell.id, cumulativeCode.join("\n"));
+      createBundle(cell.id, cell.content);
     }, 1500);
 
     return () => {
       clearTimeout(runTimer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cumulativeCode.join("\n"), cell.id, createBundle]);
+  }, [cell, createBundle]);
 
   useEffect(() => {
     const fmtTimer = setTimeout(async () => {
