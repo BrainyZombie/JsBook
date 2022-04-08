@@ -42,14 +42,13 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return cumulativeCode;
   });
 
-  console.log(cumulativeCode);
-
   useEffect(() => {
     if (!bundle) {
       createBundle(cell.id, cumulativeCode.join("\n"));
       return;
     }
     const runTimer = setTimeout(async () => {
+      // console.log(cumulativeCode);
       createBundle(cell.id, cumulativeCode.join("\n"));
     }, 1500);
 
@@ -59,28 +58,28 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cumulativeCode.join("\n"), cell.id, createBundle]);
 
-  // useEffect(() => {
-  //   const fmtTimer = setTimeout(async () => {
-  //     const unformatted: string = cell.content;
-  //     try {
-  //       const formatted = prettier
-  //         .format(unformatted, {
-  //           parser: "babel",
-  //           plugins: [parser],
-  //           useTabs: false,
-  //           semi: true,
-  //           singleQuote: true,
-  //         })
-  //         .replace(/\n$/, "");
+  useEffect(() => {
+    const fmtTimer = setTimeout(async () => {
+      const unformatted: string = cell.content;
+      try {
+        const formatted = prettier
+          .format(unformatted, {
+            parser: "babel",
+            plugins: [parser],
+            useTabs: false,
+            semi: true,
+            singleQuote: true,
+          })
+          .replace(/\n$/, "");
 
-  //       updateCell(cell.id, formatted);
-  //     } catch (err: any) {}
-  //   }, 3000);
+        updateCell(cell.id, formatted);
+      } catch (err: any) {}
+    }, 3000);
 
-  //   return () => {
-  //     clearTimeout(fmtTimer);
-  //   };
-  // }, [cell, updateCell]);
+    return () => {
+      clearTimeout(fmtTimer);
+    };
+  }, [cell, updateCell]);
 
   return (
     <Resizable direction="vertical">
